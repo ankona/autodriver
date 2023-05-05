@@ -1,0 +1,7 @@
+**/*.out
+**/*.err
+**/*.dat
+**/*.rdb
+.vscode/
+output/
+**/__pycache__
