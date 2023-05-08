@@ -47,21 +47,22 @@ def build_experiment(save_to: str) -> ExperimentContext:
     db = exp.create_database(interface="lo0")
     {% endif %}
 
-    hello_rs = exp.create_run_settings("echo", "Hello, Chris!")
-    hello_model = exp.create_model("hello-model", hello_rs)
+    applications = []
+    {% for app in applications %}
+    app_run_settings = exp.create_run_settings("{{app.rs.exe}}", "{{app.rs.arg}}")
+    app = exp.create_model("{{app.name}}", app_run_settings)
+    applications.append(app)
+    {% endfor %}
 
-    goodbye_rs = exp.create_run_settings("echo", "Goodby, Chris!")
-    goodbye_model = exp.create_model("goodbye-model", goodbye_rs)
+    experiment_entities = []
 
-    experiment_entities = [
-        
-        {% if has_db %}
-        db,
-        {% endif %}
+    {% if has_db %}
+    experiment_entities.append(db)
+    {% endif %}
 
-        hello_model,
-        goodbye_model,
-    ]
+    {% if has_apps %}
+    experiment_entities.extend(applications)
+    {% endif %}
 
     return ExperimentContext(experiment=exp, entities=experiment_entities, path=save_to)
 
